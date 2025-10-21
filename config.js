@@ -7,7 +7,7 @@ function convertToBool(text, fault = 'true') {
 
 module.exports = {
   BAILEYS: "@whiskeysockets/baileys",
-  SESSION_ID: process.env.SESSION_ID || "Keith;;;uFcUDSDb#ETApDLdYgtU-CPFlyM1fnKGnVpFNOsBqDDc27dYdV78",
+  SESSION_ID: process.env.SESSION_ID || "BANDAHAELI~uFcUDSDb#ETApDLdYgtU-CPFlyM1fnKGnVpFNOsBqDDc27dYdV78",
   START_IMG: process.env.START_IMG || "https://cdn.inprnt.com/thumbs/5d/0b/5d0b7faa113233d7c2a49cd8dbb80ea5@2x.jpg",
   CDN: process.env.CDN || "https://cdn-bandaheali.zone.id",
   AUTO_STATUS_SEEN: process.env.AUTO_STATUS_SEEN || "true",
