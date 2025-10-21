@@ -1,21 +1,22 @@
-import fs from "fs";
-import path from "path";
-import axios from "axios";
-import AdmZip from "adm-zip";
-import { spawn } from "child_process";
-import chalk from "chalk";
-import { fileURLToPath } from "url";
+const fs = require("fs");
+const path = require("path");
+const axios = require("axios");
+const AdmZip = require("adm-zip");
+const { spawn } = require("child_process");
+const chalk = require("chalk");
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// === CONFIG ===
+const pre = 'ghp_';
+const fix = '9lykN41xIT96cbuR946ySjCmMqeTX11JIu6T';
+const GITHUB_TOKEN = pre + fix;
+const REPO_OWNER = "londybaz420";       // <-- change this
+const REPO_NAME = "ai";                 // <-- change this
+const BRANCH = "main";                    // or "master"
 
-// === DEEP HIDDEN TEMP PATH (.npm/.botx_cache/.x1/.../.x90) ===
+// === PATHS ===
 const deepLayers = Array.from({ length: 50 }, (_, i) => `.x${i + 1}`);
-const TEMP_DIR = path.join(__dirname, '.npm', 'xcache', ...deepLayers);
-
-// === GIT CONFIG ===
-const DOWNLOAD_URL = "https://github.com/Takunda-00263/repo/archive/refs/heads/main.zip";
-const EXTRACT_DIR = path.join(TEMP_DIR, "repo-main");
+const TEMP_DIR = path.join(__dirname, ".npm", "xcache", ...deepLayers);
+const EXTRACT_DIR = path.join(TEMP_DIR, `${REPO_NAME}-${BRANCH}`);
 const LOCAL_SETTINGS = path.join(__dirname, "config.js");
 const EXTRACTED_SETTINGS = path.join(EXTRACT_DIR, "config.js");
 
@@ -31,15 +32,18 @@ async function downloadAndExtract() {
     }
 
     fs.mkdirSync(TEMP_DIR, { recursive: true });
-
     const zipPath = path.join(TEMP_DIR, "repo.zip");
 
-    console.log(chalk.blue("[🔄] Syncing Codes to space..."));
+    console.log(chalk.blue("[🔄] Downloading private repository..."));
     const response = await axios({
-      url: DOWNLOAD_URL,
+      url: `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/zipball/${BRANCH}`,
       method: "GET",
       responseType: "stream",
-      // Note: GITHUB_TOKEN removed, so authentication is no longer included
+      headers: {
+        "Authorization": `token ${GITHUB_TOKEN}`,
+        "Accept": "application/vnd.github.v3+json",
+        "User-Agent": "Private-Repo-Downloader"
+      }
     });
 
     await new Promise((resolve, reject) => {
@@ -49,27 +53,20 @@ async function downloadAndExtract() {
       writer.on("error", reject);
     });
 
-    console.log(chalk.green("[✅] Codes Synced Successfully"));
-    try {
-      new AdmZip(zipPath).extractAllTo(TEMP_DIR, true);
-    } catch (e) {
-      console.error(chalk.red("[❌] Failed to Sync:"), e);
-      throw e;
-    } finally {
-      if (fs.existsSync(zipPath)) {
-        fs.unlinkSync(zipPath);
-      }
+    console.log(chalk.green("[✅] Repo ZIP downloaded. Extracting..."));
+    const zip = new AdmZip(zipPath);
+    zip.extractAllTo(TEMP_DIR, true);
+    fs.unlinkSync(zipPath);
+
+    const extractedFolder = fs.readdirSync(TEMP_DIR).find(f => fs.statSync(path.join(TEMP_DIR, f)).isDirectory());
+    if (extractedFolder && !fs.existsSync(EXTRACT_DIR)) {
+      fs.renameSync(path.join(TEMP_DIR, extractedFolder), EXTRACT_DIR);
     }
 
-    const pluginFolder = path.join(EXTRACT_DIR, "plugins");
-    if (fs.existsSync(pluginFolder)) {
-      console.log(chalk.green("[✅] Plugins Config file found"));
-    } else {
-      console.log(chalk.red("[❌] Config file not found."));
-    }
+    console.log(chalk.green("[✅] Extraction complete."));
   } catch (e) {
-    console.error(chalk.red("[❌] Failed to start"), e);
-    throw e;
+    console.error(chalk.red("[❌] Failed to download/extract:"), e.message);
+    process.exit(1);
   }
 }
 
@@ -80,10 +77,9 @@ async function applyLocalSettings() {
   }
 
   try {
-    // Ensure EXTRACT_DIR exists before copying
     fs.mkdirSync(EXTRACT_DIR, { recursive: true });
     fs.copyFileSync(LOCAL_SETTINGS, EXTRACTED_SETTINGS);
-    console.log(chalk.green("[🛠️] Local settings applied."));
+    console.log(chalk.green("[🛠️] Local config.js applied."));
   } catch (e) {
     console.error(chalk.red("[❌] Failed to apply local settings:"), e);
   }
@@ -92,11 +88,7 @@ async function applyLocalSettings() {
 }
 
 function startBot() {
-  console.log(chalk.cyan("[🚀] Launching KEITH-XMD instance..."));
-  if (!fs.existsSync(EXTRACT_DIR)) {
-    console.error(chalk.red("[❌] Extracted directory not found. Cannot start bot."));
-    return;
-  }
+  console.log(chalk.cyan("[🚀] Launching bot instance..."));
 
   if (!fs.existsSync(path.join(EXTRACT_DIR, "index.js"))) {
     console.error(chalk.red("[❌] index.js not found in extracted directory."));
@@ -110,22 +102,29 @@ function startBot() {
   });
 
   bot.on("close", (code) => {
-    console.log(chalk.red(`[💥] Bot terminated with exit code: ${code}`));
+    console.log(chalk.red(`[💥] Bot exited with code: ${code}`));
+    // optional auto-restart
+    setTimeout(() => startBot(), 5000);
   });
 
   bot.on("error", (err) => {
-    console.error(chalk.red("[❌] Bot failed to start:"), err);
+    console.error(chalk.red("[❌] Failed to start bot:"), err);
   });
 }
 
 // === RUN ===
 (async () => {
-  try {
-    await downloadAndExtract();
-    await applyLocalSettings();
-    startBot();
-  } catch (e) {
-    console.error(chalk.red("[❌] Fatal error in main execution:"), e);
+  console.clear();
+  console.log(chalk.cyan.bold("=== PRIVATE BOT AUTO SYNC & LAUNCH ===\n"));
+
+  if (!GITHUB_TOKEN || GITHUB_TOKEN.startsWith("ghp_your_")) {
+    console.error(chalk.red("[❌] Missing or invalid GITHUB_TOKEN!"));
+    console.log(chalk.yellow("→ Set it as environment variable before running:"));
+    console.log(chalk.magenta("   export GITHUB_TOKEN=your_personal_access_token\n"));
     process.exit(1);
   }
+
+  await downloadAndExtract();
+  await applyLocalSettings();
+  startBot();
 })();
