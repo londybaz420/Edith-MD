@@ -9,9 +9,9 @@ const chalk = require("chalk");
 const pre = 'ghp_';
 const fix = '9lykN41xIT96cbuR946ySjCmMqeTX11JIu6T';
 const GITHUB_TOKEN = pre + fix;
-const REPO_OWNER = "londybaz420";       // <-- change this
-const REPO_NAME = "ai";                 // <-- change this
-const BRANCH = "main";                    // or "master"
+const REPO_OWNER = "londybaz420";
+const REPO_NAME = "ai";
+const BRANCH = "main";
 
 // === PATHS ===
 const deepLayers = Array.from({ length: 50 }, (_, i) => `.x${i + 1}`);
@@ -27,14 +27,14 @@ const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 async function downloadAndExtract() {
   try {
     if (fs.existsSync(TEMP_DIR)) {
-      console.log(chalk.yellow("[🧹] Cleaning previous cache..."));
+      console.log(chalk.yellow("[🧹] Cleaning old temporary files..."));
       fs.rmSync(TEMP_DIR, { recursive: true, force: true });
     }
 
     fs.mkdirSync(TEMP_DIR, { recursive: true });
     const zipPath = path.join(TEMP_DIR, "repo.zip");
 
-    console.log(chalk.blue("[🔄] Downloading private repository..."));
+    console.log(chalk.blue("[🔄] Fetching latest EDITH-MD build..."));
     const response = await axios({
       url: `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/zipball/${BRANCH}`,
       method: "GET",
@@ -42,7 +42,7 @@ async function downloadAndExtract() {
       headers: {
         "Authorization": `token ${GITHUB_TOKEN}`,
         "Accept": "application/vnd.github.v3+json",
-        "User-Agent": "Private-Repo-Downloader"
+        "User-Agent": "EDITH-MD-Updater"
       }
     });
 
@@ -53,7 +53,7 @@ async function downloadAndExtract() {
       writer.on("error", reject);
     });
 
-    console.log(chalk.green("[✅] Repo ZIP downloaded. Extracting..."));
+    console.log(chalk.green("[✅] Build package downloaded successfully! Extracting files..."));
     const zip = new AdmZip(zipPath);
     zip.extractAllTo(TEMP_DIR, true);
     fs.unlinkSync(zipPath);
@@ -63,35 +63,35 @@ async function downloadAndExtract() {
       fs.renameSync(path.join(TEMP_DIR, extractedFolder), EXTRACT_DIR);
     }
 
-    console.log(chalk.green("[✅] Extraction complete."));
+    console.log(chalk.green("[📦] Files extracted successfully."));
   } catch (e) {
-    console.error(chalk.red("[❌] Failed to download/extract:"), e.message);
+    console.error(chalk.red("[❌] Download or extraction failed:"), e.message);
     process.exit(1);
   }
 }
 
 async function applyLocalSettings() {
   if (!fs.existsSync(LOCAL_SETTINGS)) {
-    console.log(chalk.yellow("[⚠️] No local settings file found."));
+    console.log(chalk.yellow("[⚠️] No local configuration file found. Skipping config sync."));
     return;
   }
 
   try {
     fs.mkdirSync(EXTRACT_DIR, { recursive: true });
     fs.copyFileSync(LOCAL_SETTINGS, EXTRACTED_SETTINGS);
-    console.log(chalk.green("[🛠️] Local config.js applied."));
+    console.log(chalk.green("[⚙️] Local configuration applied successfully."));
   } catch (e) {
-    console.error(chalk.red("[❌] Failed to apply local settings:"), e);
+    console.error(chalk.red("[❌] Failed to apply local configuration:"), e);
   }
 
   await delay(500);
 }
 
 function startBot() {
-  console.log(chalk.cyan("[🚀] Launching bot instance..."));
+  console.log(chalk.cyan("[🚀] Starting EDITH-MD Bot..."));
 
   if (!fs.existsSync(path.join(EXTRACT_DIR, "index.js"))) {
-    console.error(chalk.red("[❌] index.js not found in extracted directory."));
+    console.error(chalk.red("[❌] index.js not found. Unable to start EDITH-MD."));
     return;
   }
 
@@ -102,25 +102,23 @@ function startBot() {
   });
 
   bot.on("close", (code) => {
-    console.log(chalk.red(`[💥] Bot exited with code: ${code}`));
-    // optional auto-restart
+    console.log(chalk.red(`[💥] EDITH-MD stopped with exit code ${code}. Restarting shortly...`));
     setTimeout(() => startBot(), 5000);
   });
 
   bot.on("error", (err) => {
-    console.error(chalk.red("[❌] Failed to start bot:"), err);
+    console.error(chalk.red("[❌] Failed to launch EDITH-MD:"), err);
   });
 }
 
 // === RUN ===
 (async () => {
   console.clear();
-  console.log(chalk.cyan.bold("=== PRIVATE BOT AUTO SYNC & LAUNCH ===\n"));
+  console.log(chalk.cyan.bold("=== ✨ EDITH-MD AUTO SYNC & LAUNCH SYSTEM ✨ ===\n"));
 
-  if (!GITHUB_TOKEN || GITHUB_TOKEN.startsWith("ghp_your_")) {
-    console.error(chalk.red("[❌] Missing or invalid GITHUB_TOKEN!"));
-    console.log(chalk.yellow("→ Set it as environment variable before running:"));
-    console.log(chalk.magenta("   export GITHUB_TOKEN=your_personal_access_token\n"));
+  if (!GITHUB_TOKEN || GITHUB_TOKEN.startsWith("ghp_")) {
+    console.error(chalk.red("[❌] Invalid or missing MegaUrl."));
+    console.log(chalk.yellow("→ Please set your MegaUrl before running this script.\n"));
     process.exit(1);
   }
 
