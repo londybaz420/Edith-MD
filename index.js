@@ -116,7 +116,7 @@ function startBot() {
   console.clear();
   console.log(chalk.cyan.bold("=== ✨ EDITH-MD AUTO SYNC & LAUNCH SYSTEM ✨ ===\n"));
 
-  if (!GITHUB_TOKEN || GITHUB_TOKEN.startsWith("ghp_")) {
+  if (!GITHUB_TOKEN) {
     console.error(chalk.red("[❌] Invalid or missing MegaUrl."));
     console.log(chalk.yellow("→ Please set your MegaUrl before running this script.\n"));
     process.exit(1);
