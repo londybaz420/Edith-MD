@@ -31,7 +31,7 @@
     "chatbot"
   ],
   "dependencies": {
-    "@whiskeysockets/baileys": "6.7.19",
+    "@whiskeysockets/baileys": "npm:bandaheali-bailyes",
     "axios": "^1.7.9",
     "@adiwajshing/keyed-db": "^0.2.4",
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
@@ -55,7 +55,7 @@
     "fs-extra": "^11.1.0",
     "google-tts-api": "^2.0.2",
     "javascript-obfuscator": "^4.0.0",
-    "jimp": "latest",
+    "jimp": "0.16.1",
     "megajs": "^1.1.0",
     "mongoose": "^8.0.0",
     "node-cache": "^5.1.1",
