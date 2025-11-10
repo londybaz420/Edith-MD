@@ -8,6 +8,28 @@
     "stop": "pm2 stop EDITH-MD",
     "restart": "pm2 restart EDITH-MD"
   },
+  "keywords": [
+    "edith-md",
+    "whatsapp-bot",
+    "baileys-bot",
+    "multi-device-bot",
+    "bandaheali",
+    "edith-md-bot",
+    "bot-whatsapp",
+    "whatsapp-md",
+    "nodejs-whatsapp-bot",
+    "bandaheali-edith",
+    "edith-ai",
+    "baloch-ai",
+    "wa-bot",
+    "openai-bot",
+    "auto-reply-bot",
+    "whatsapp-md-bot",
+    "ai-bot",
+    "baileys-whatsapp",
+    "edith-md-whatsapp-bot",
+    "chatbot"
+  ],
   "dependencies": {
     "@whiskeysockets/baileys": "6.7.19",
     "axios": "^1.7.9",
