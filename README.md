@@ -3,7 +3,7 @@
 <a><img src='https://ik.imagekit.io/mrshaban/IMG-20250808-WA0034.jpg?'/></a>
 
 <p align="center">
-  <a href="https://github.com/Bandah-E-Ali"><img title="Developer" src="https://img.shields.io/badge/Author-EDITH%20MD-FF00FF.svg?style=big-square&logo=github" /></a>
+  <a href="https://github.com/Bandah-E-Ali"><img title="Developer" src="https://img.shields.io/badge/Author-Bandaheali-FF00FF.svg?style=big-square&logo=github" /></a>
 </p>
 
 <div align="center">
@@ -67,7 +67,7 @@ href="https://github.com/Bandah-E-Ali/edith-md/graphs/commit-activity"><img heig
     </tr>
     <tr>
       <td><a href="https://dashboard.render.com/web/new" target="_blank"><img src="https://img.shields.io/badge/Render-000000?style=for-the-badge&logo=render&logoColor=white&labelColor=000000&color=00ffaa"/></a></td>
-      <td><a href="https://zone.id/" target="_blank"><img src="https://img.shields.io/badge/Free VPS-CC00FF?style=for-the-badge&logo=huggingface&logoColor=white&labelColor=000000"/></a></td>
+      <td><a href="https://vps.bandaheali.site/" target="_blank"><img src="https://img.shields.io/badge/Free VPS-CC00FF?style=for-the-badge&logo=huggingface&logoColor=white&labelColor=000000"/></a></td>
     </tr>
   </table>
 </div>
